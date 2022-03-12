@@ -1,4 +1,3 @@
 package Models
 
-trait CardItem {
-}
+trait CardItem

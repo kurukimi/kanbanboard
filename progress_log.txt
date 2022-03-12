@@ -1,0 +1,12 @@
+
+# report 1
+
+During first ~2 weeks I created model classes like Board, CardList etc., service for actions, And also basic structure
+of the project with models, service (for handling models), controllers (for fronts actions), and views.
+
+no actual testing yet
+
+no major problems yet.
+
+Time spent at the moment is about 10h. I'm maybe little late from the plan because of current workload
+on other courses but not by much.

@@ -5,6 +5,7 @@ class Card(text: String) {
   private val items = Buffer[CardItem]()
   private val tags = Buffer[String]()
 
+  def getText = text
   def getItems = items
   def addItem(item: CardItem) = items += item
   def removeItem(item: CardItem) = items -= item

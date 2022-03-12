@@ -1,5 +1,6 @@
 package Models
 
-object Archive extends CardList("Archive") {
+
+object Archive extends CardList("Archive"){
 
 }

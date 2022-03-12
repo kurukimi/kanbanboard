@@ -2,5 +2,9 @@ package Models
 import scala.collection.mutable.Buffer
 
 class checkList extends CardItem {
-  val items = Buffer[String]()
+  case class checkListItem(job: String, done: Boolean = false)
+  val items = Buffer[checkListItem]()
+
+  def addItem(name: String) = items += checkListItem(name)
+
 }

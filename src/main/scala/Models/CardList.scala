@@ -5,6 +5,6 @@ class CardList(name: String) {
   private val cards = Buffer[Card]()
 
   def getCards = cards
-  def addCard(text: String) = cards += new Card(text)
+  def addCard(card: Card) = cards += card
   def removeCard(card: Card) = cards -= card
 }
