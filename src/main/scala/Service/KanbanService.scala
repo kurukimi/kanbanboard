@@ -19,7 +19,7 @@ object KanbanService {
 
   def archiveCard(card: Card, cardList: CardList) = {
     kanban.getArchive.addCard(card)
-    this.removeCard(card, cardList)
+    cardList.removeCard(card)
   }
   def removeFromArchive(card: Card, to: CardList) = {
     to.addCard(card)
