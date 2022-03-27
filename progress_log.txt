@@ -10,3 +10,12 @@ no major problems yet.
 
 Time spent at the moment is about 10h. I'm maybe little late from the plan because of current workload
 on other courses but not by much.
+
+# report 2
+
+More functionality to models, Filemanager etc.
+
+implementing tests next up
+
+
+Time spent ~4hours
