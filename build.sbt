@@ -18,3 +18,7 @@ libraryDependencies ++= {
 }
 
 libraryDependencies += "org.scala-lang.modules" %% "scala-xml" % "2.0.1"
+
+libraryDependencies += "com.github.nscala-time" %% "nscala-time" % "2.30.0"
+
+libraryDependencies += "org.scalatest" %% "scalatest" % "3.2.11" % Test

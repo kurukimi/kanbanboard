@@ -1,6 +1,6 @@
 package Service
 import Models._
-
+import utils.FileManager._
 object KanbanService {
   private val kanban = new KanbanModel
 
@@ -26,6 +26,10 @@ object KanbanService {
     kanban.getArchive.removeCard(card)
   }
   def getArchive = kanban.getArchive
+
+  def saveCard(card: Card, path: String) = saveXml(card.toXml, path)
+
+  def loadCard(path: String) = xmlToCard(loadXml(path))
 
   def filter(q: String) = {
     kanban.getBoards.flatMap(
