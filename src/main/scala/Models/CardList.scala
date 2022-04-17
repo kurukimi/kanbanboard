@@ -1,7 +1,7 @@
 package Models
 import scala.collection.mutable.Buffer
 
-class CardList(name: String) {
+class CardList(val name: String) {
   private val cards = Buffer[Card]()
 
   def getCards = cards
