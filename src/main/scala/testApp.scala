@@ -1,5 +1,3 @@
-package views
-
 import javafx.{fxml => jfxf, scene => jfxs}
 import scalafx.Includes._
 import scalafx.application.JFXApp3
@@ -14,16 +12,15 @@ object FXMLMainView extends JFXApp3 {
   def start(): Unit = {
 
 
-    val resource = getClass.getResource("MainView.fxml")
+    val resource = getClass.getResource("views/MainView.fxml")
     if (resource == null) {
       throw new IOException("Cannot load resource")
     }
 
-
     val root: jfxs.Parent = jfxf.FXMLLoader.load(resource)
 
     stage = new PrimaryStage() {
-      title = "FXML Demo"
+      title = "Kanban"
       scene = new Scene(root)
     }
   }

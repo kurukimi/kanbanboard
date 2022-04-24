@@ -1,12 +1,17 @@
 package Service
 import Models._
 import utils.FileManager._
+
+import java.io.IOException
+
+
 object KanbanService {
-  private val kanban = new KanbanModel
+  val kanban = new KanbanModel
 
   def addBoard(name: String) = kanban.addBoard(new Board(name))
   def removeBoard(board: Board) = kanban.removeBoard(board)
   def getBoards = kanban.getBoards
+  def getBoardObs = kanban.getObs
 
   def addList(name: String, board: Board) = {
     val l = new CardList(name)
@@ -15,6 +20,7 @@ object KanbanService {
   }
   def removeList(list: CardList)(board: Board) = board.removeCardList(list)
   def getLists(board: Board) = board.getCardLists
+  def getListObs(board: Board) = board.getObs
 
   def addCard(content: String, cList: CardList) = {
     val c = new Card(content)
@@ -34,15 +40,29 @@ object KanbanService {
   }
   def getArchive = kanban.getArchive
 
-  def saveCard(card: Card, path: String) = saveXml(card.toXml, path)
+  def saveCard(card: Card, path: String) = {
+    try {
+      saveXml(card.toXml, path + s"\\{$card}")
+      true
+    } catch {
+      case e: IOException => false
+    }
 
-  def loadCard(path: String) = xmlToCard(loadXml(path))
+    }
+
+  def loadCard(path: String) = {
+    try {
+      Some(xmlToCard(loadXml(path)))
+    } catch {
+      case e: IOException => None
+    }
+  }
 
   def filter(q: String) = {
     kanban.getBoards.flatMap(
       b => b.getCardLists.flatMap(
       c => c.getCards.filter(
-      _.getTags.contains(q))))
+      _.getTags.exists(_.toLowerCase.contains(q.toLowerCase)) )))
   }
 
 }

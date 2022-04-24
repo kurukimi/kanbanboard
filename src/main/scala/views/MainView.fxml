@@ -1,83 +1,66 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.control.Button?>
-<?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.Menu?>
 <?import javafx.scene.control.MenuBar?>
 <?import javafx.scene.control.MenuButton?>
 <?import javafx.scene.control.MenuItem?>
-<?import javafx.scene.control.SeparatorMenuItem?>
-<?import javafx.scene.layout.AnchorPane?>
-<?import javafx.scene.layout.ColumnConstraints?>
-<?import javafx.scene.layout.GridPane?>
-<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Text?>
 
-
-<?import javafx.scene.control.ScrollBar?>
-<VBox prefHeight="400.0" prefWidth="640.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controllers.MainController">
+<VBox prefHeight="400.0" prefWidth="640.0" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controllers.MainController">
   <children>
     <MenuBar VBox.vgrow="NEVER">
       <menus>
         <Menu mnemonicParsing="false" text="File">
           <items>
-            <MenuItem mnemonicParsing="false" text="New" />
-            <MenuItem mnemonicParsing="false" text="Open…" />
-            <Menu mnemonicParsing="false" text="Open Recent" />
-            <SeparatorMenuItem mnemonicParsing="false" />
-            <MenuItem mnemonicParsing="false" text="Close" />
-            <MenuItem mnemonicParsing="false" text="Save" />
-            <MenuItem mnemonicParsing="false" text="Save As…" />
-            <MenuItem mnemonicParsing="false" text="Revert" />
-            <SeparatorMenuItem mnemonicParsing="false" />
-            <MenuItem mnemonicParsing="false" text="Preferences…" />
-            <SeparatorMenuItem mnemonicParsing="false" />
-            <MenuItem mnemonicParsing="false" text="Quit" />
-          </items>
-        </Menu>
-        <Menu mnemonicParsing="false" text="Edit">
-          <items>
-            <MenuItem mnemonicParsing="false" text="Undo" />
-            <MenuItem mnemonicParsing="false" text="Redo" />
-            <SeparatorMenuItem mnemonicParsing="false" />
-            <MenuItem mnemonicParsing="false" text="Cut" />
-            <MenuItem mnemonicParsing="false" text="Copy" />
-            <MenuItem mnemonicParsing="false" text="Paste" />
-            <MenuItem mnemonicParsing="false" text="Delete" />
-            <SeparatorMenuItem mnemonicParsing="false" />
-            <MenuItem mnemonicParsing="false" text="Select All" />
-            <MenuItem mnemonicParsing="false" text="Unselect All" />
+
+            <MenuItem mnemonicParsing="false" onAction="#loadCard" text="Open" />
+
           </items>
         </Menu>
         <Menu mnemonicParsing="false" text="Help">
           <items>
-            <MenuItem mnemonicParsing="false" text="About MyHelloApp" />
+            <MenuItem mnemonicParsing="false" text="Good to know" />
           </items>
         </Menu>
       </menus>
     </MenuBar>
-    <AnchorPane maxHeight="-1.0" maxWidth="-1.0" prefHeight="-1.0" prefWidth="-1.0" VBox.vgrow="ALWAYS" >
+    <AnchorPane maxHeight="-1.0" maxWidth="-1.0" prefHeight="-1.0" prefWidth="-1.0" VBox.vgrow="ALWAYS">
          <children>
             <HBox layoutX="187.0" layoutY="87.0" prefHeight="100.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                <children>
-                  <VBox prefHeight="375.0" prefWidth="117.0" minWidth="117.0">
+                  <VBox alignment="BOTTOM_CENTER" minWidth="117.0" prefHeight="375.0" prefWidth="117.0" style="-fx-spacing: 5;">
                      <children>
-                        <Button fx:id="addList" onAction="#handleListAdd" prefHeight="37.0" prefWidth="121.0" text="new List" />
-                        <Button mnemonicParsing="false" prefHeight="37.0" prefWidth="121.0" text="Button" />
-                        <Button mnemonicParsing="false" prefHeight="37.0" prefWidth="121.0" text="Button" />
-                        <Button mnemonicParsing="false" prefHeight="37.0" prefWidth="121.0" text="Button" />
-                        <ListView prefHeight="87.0" prefWidth="117.0" />
-                        <MenuButton mnemonicParsing="false" prefHeight="31.0" prefWidth="117.0" text="MenuButton">
+                        <MenuButton fx:id="archive" maxWidth="200" mnemonicParsing="false" prefHeight="29.0" prefWidth="117.0" text="Archived">
                           <items>
-                            <MenuItem mnemonicParsing="false" text="Action 1" />
-                            <MenuItem mnemonicParsing="false" text="Action 2" />
+
                           </items>
                         </MenuButton>
+                         <Button mnemonicParsing="false" onAction="#addTable" prefHeight="37.0" prefWidth="121.0" text="new Table" />
+                        <Button fx:id="addList" onAction="#handleListAdd" prefHeight="37.0" prefWidth="121.0" text="new List" />
+                        <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0">
+                           <children>
+                              <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Filter" />
+                              <TextField fx:id="filter" />
+                           </children>
+                        </VBox>
                      </children></VBox>
 
-                    <ScrollPane HBox.hgrow="ALWAYS" fitToHeight="true" fitToWidth="true">
-                   <fx:include fx:id="TableV" source="TableView.fxml" />
+                    <ScrollPane fitToHeight="true" fitToWidth="true" HBox.hgrow="ALWAYS">
+                   <TabPane fx:id="tabP">
+                       <tabs />
+                       <Tab fx:id="tab1" text="table1">
+
+                       </Tab>
+                       <tabs />
+                   </TabPane>
                    </ScrollPane>
                </children>
             </HBox>

@@ -1,22 +1,38 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.*?>
-<?import java.util.*?>
-<?import javafx.scene.*?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
-
+<?import javafx.scene.control.MenuButton?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.SeparatorMenuItem?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Text?>
-<fx:root type="javafx.scene.layout.VBox" xmlns="http://javafx.com/javafx"
-         xmlns:fx="http://javafx.com/fxml"
-         fx:controller="controllers.CardController"
-         fx:id="cardV"
-           >
-    <children>
-        <TextArea fx:id="textT"></TextArea>
-        <Text fx:id="timeT">4 hours ago</Text>
-    </children>
+
+<?import javafx.scene.control.Menu?>
+<fx:root fx:id="cardV" alignment="CENTER"
+         style="-fx-background-color: #0ABAB5; -fx-padding: 10px; -fx-spacing: 10px; -fx-background-radius: 10; -fx-border-radius: 10;"
+         type="javafx.scene.layout.VBox" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controllers.CardController">
+
+     <HBox alignment="TOP_RIGHT">
+     <MenuButton fx:id="menuB" blendMode="MULTIPLY">
+         <items>
+             <MenuItem onAction="#removeCard" text="Remove" />
+             <MenuItem onAction="#archiveCard" text="Archive" />
+             <MenuItem onAction="#saveCard" text="Save" />
+            <SeparatorMenuItem mnemonicParsing="false" />
+            <MenuItem mnemonicParsing="false" text="Add Tag" onAction="#addTag"/>
+             <Menu fx:id="tags" text="Tags">
+                 <items>
+
+                 </items>
+             </Menu>
+         </items>
+     </MenuButton>
+    </HBox>
+
+
+     <TextArea fx:id="textT" prefHeight="50" prefWidth="100" style="-fx-text-box-border: transparent; -fx-background-color: -fx-control-inner-background;" />
+     <Text fx:id="timeT">4 hours ago</Text>
+
 
 </fx:root>
-
-

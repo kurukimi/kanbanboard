@@ -6,6 +6,8 @@ import Models.CardItem
 import org.joda.time.DateTime
 import utils.FileManager.{FileOps, loadXml, saveXml, xmlToCard}
 import com.github.nscala_time.time.Imports._
+
+import java.io.IOException
 import scala.xml.Elem
 
 trait FileManager[A] {
@@ -15,16 +17,23 @@ trait FileManager[A] {
 
 }
 
-// Todo: IO exceptions, tests
-object FileManager {
+
+object FileManager{
   def apply[A](implicit sh: FileManager[A]): FileManager[A] = sh
 
   implicit class FileOps[A: FileManager](a: A) {
     def toXml = FileManager[A].toXml(a)
   }
 
-  def loadXml(path: String) = scala.xml.XML.loadFile(path)
-  def saveXml(e: Elem, name: String) = scala.xml.XML.save( s"${name}.xml", e)
+  @throws(classOf[IOException])
+  def loadXml(path: String)  = {
+      scala.xml.XML.loadFile(path)
+    }
+  @throws(classOf[IOException])
+  def saveXml(e: Elem, name: String) = {
+      scala.xml.XML.save( s"${name}.xml", e)
+
+  }
 
   def xmlToCard(el: Elem) = {
     val text = (el \\ "text").text

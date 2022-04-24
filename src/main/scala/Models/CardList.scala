@@ -1,10 +1,13 @@
 package Models
 import scala.collection.mutable.Buffer
+import scalafx.collections.ObservableBuffer
 
-class CardList(val name: String) {
-  private val cards = Buffer[Card]()
+class CardList(var name: String) {
+  private val cards = ObservableBuffer[Card]()
 
-  def getCards = cards
+  def setName(s: String) = name = s
+  def getCards = cards.toBuffer
   def addCard(card: Card) = cards += card
-  def removeCard(card: Card) = cards -= card
+  def removeCard(card: Card) = cards.remove(card)
+  def getObs = cards
 }

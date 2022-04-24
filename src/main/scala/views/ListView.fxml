@@ -1,21 +1,44 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.*?>
-<?import java.util.*?>
-<?import javafx.scene.*?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
 
-<?import javafx.scene.text.Text?>
-<fx:root type="javafx.scene.layout.VBox" xmlns="http://javafx.com/javafx"
-         xmlns:fx="http://javafx.com/fxml"
-         fx:controller="controllers.ListController"
-         fx:id="ListV"
-           >
-    <Text fx:id="title"></Text>
-    <children>
+<fx:root fx:id="ListV" alignment="CENTER" prefHeight="270.0" prefWidth="220.0" style="-fx-background-color: teal; -fx-spacing: 10px; -fx-background-radius: 5; -fx-border-radius: 5; -fx-padding: 10px;"
+         type="javafx.scene.layout.VBox" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controllers.ListController">
+     <VBox fx:id="ListB" alignment="CENTER" minHeight="20.0" minWidth="200.0" prefHeight="20.0" prefWidth="200.0" style="-fx-background-color: teal;">
+          <HBox blendMode="MULTIPLY" prefHeight="20.0" prefWidth="200.0">
+             <children>
+                   <HBox maxWidth="100.0" prefHeight="100.0" prefWidth="100.0" spacing="15">
+               <TextField fx:id="title" blendMode="ADD"  style="-fx-text-box-border: transparent; -fx-background-color: -fx-control-inner-background;" text="Title">
+                  <font>
+                     <Font name="Arial Italic" size="15.0" />
+                  </font>
+               </TextField>
+                   </HBox>
+                <HBox prefHeight="20.0" prefWidth="100.0" />
+                    <Button onAction="#delList" style="-fx-button-border: transparent;">X</Button>
+             </children>
+          </HBox>
+     </VBox>
 
-        <Button onAction="#addCard">+</Button>
-    </children>
+    <ScrollPane fitToHeight="true" fitToWidth="true" minHeight="180.0" minWidth="200.0" prefHeight="180.0" prefWidth="200.0" style="-fx-background-color: teal" vbarPolicy="NEVER" VBox.vgrow="ALWAYS">
+      <content>
+
+            <VBox fx:id="ListA" style="-fx-spacing: 10px; -fx-background-color: teal;" >
+            </VBox>
+      </content>
+      <opaqueInsets>
+         <Insets />
+      </opaqueInsets>
+    </ScrollPane>
+  <Button alignment="CENTER" blendMode="MULTIPLY" contentDisplay="CENTER" minHeight="25.0" onAction="#addCard" prefHeight="25.0" prefWidth="25.0" textAlignment="CENTER">+</Button>
+
+
+
 
 </fx:root>
