@@ -4,17 +4,11 @@ import Models.CheckList
 import Models.TextItem
 import Models.CardItem
 import org.joda.time.DateTime
-import utils.FileManager.{FileOps, loadXml, saveXml, xmlToCard}
-import com.github.nscala_time.time.Imports._
-
 import java.io.IOException
 import scala.xml.Elem
 
 trait FileManager[A] {
   def toXml(a: A): Elem
-
-
-
 }
 
 
@@ -27,12 +21,14 @@ object FileManager{
 
   @throws(classOf[IOException])
   def loadXml(path: String)  = {
-      scala.xml.XML.loadFile(path)
+      val e = scala.xml.XML.loadFile(path)
+      println((e \\ "text"))
+      if ((e \\ "text").text.isEmpty | (e \\ "time").text.isEmpty) throw new IOException
+      e
     }
   @throws(classOf[IOException])
   def saveXml(e: Elem, name: String) = {
       scala.xml.XML.save( s"${name}.xml", e)
-
   }
 
   def xmlToCard(el: Elem) = {
@@ -86,17 +82,3 @@ object FileManager{
 
 
 
-// playing around, formal tests next
-object maint extends App{
-  val kortti = new Card("testi kortti")
-  kortti.addItem(new TextItem("TEKSTI"))
-  val chk = new CheckList
-  chk.addItem("homma")
-  kortti.addItem(chk)
-  saveXml(kortti.toXml, "kortti")
-  println(xmlToCard(loadXml("kortti.xml")).getText)
-
-  println((DateTime.parse((loadXml("kortti.xml") \\ "time").text) to DateTime.now()).millis / (1000*60*60))
-
-
-}

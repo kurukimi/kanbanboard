@@ -6,9 +6,6 @@ import javafx.fxml.FXMLLoader
 import javafx.scene.{control => jfxsc, layout => jfxsl}
 import javafx.{event => jfxe, fxml => jfxf}
 import scalafx.Includes._
-import scalafx.scene.control.{Button, ScrollPane}
-import javafx.scene.layout.GridPane
-import scalafx.scene.layout.VBox
 import javafx.scene.text.Text
 import javafx.scene.control.{Alert, MenuItem, TextArea, TextInputDialog}
 import javafx.beans.value.ChangeListener
@@ -18,11 +15,9 @@ import javafx.event.{ActionEvent, Event}
 import javafx.scene.control.Alert.AlertType
 import javafx.scene.input.{ClipboardContent, TransferMode}
 import javafx.stage.DirectoryChooser
-
 import java.io.IOException
 import java.net.URL
 import java.util
-import javax.swing.text.html.HTML.Tag
 
 class CardController extends jfxf.Initializable{
   @jfxf.FXML
@@ -36,8 +31,6 @@ class CardController extends jfxf.Initializable{
   @jfxf.FXML
   var tags: jfxsc.Menu = _
 
-
-
   @jfxf.FXML
   def saveCard() = {
     menuB.hide()
@@ -47,7 +40,6 @@ class CardController extends jfxf.Initializable{
        val success = KanbanService.saveCard(cardV.card, d.getPath)
         if (!success) {val al = new Alert(AlertType.ERROR); al.setContentText("File save failed"); al.show()}
     }
-
   }
 
   @jfxf.FXML
@@ -70,24 +62,17 @@ class CardController extends jfxf.Initializable{
     di.ifPresent(tag => {
       cardV.card.addTags(tag)
     })
-
-
   }
 
   @jfxf.FXML
   override def initialize(url: URL, rb: util.ResourceBundle): Unit = {
-
-
     timeT.setText(s"${cardV.card.getTimeElapsed} hours ago")
     textT.setText(cardV.card.getText)
     cardV.card.getTags.foreach(z => {val mn = new MenuItem();mn.setText("@"+z) ;tags.getItems.add(mn)})
-
-
     textT.textProperty.addListener(new ChangeListener[String]() {
       override def changed(observableValue: ObservableValue[_ <: String], t: String, t1: String): Unit = {
         cardV.card.setText(t1)
       }})
-
 
     cardV.card.getObsTags.addListener(new SetChangeListener[String]() {
       override def onChanged(change: SetChangeListener.Change[_ <: String]): Unit = {
@@ -102,7 +87,6 @@ class CardController extends jfxf.Initializable{
       }
     })
 
-
     cardV.setOnDragDetected( event => {
       val im = cardV.snapshot(null, null)
       var db = cardV.startDragAndDrop(TransferMode.MOVE)
@@ -115,13 +99,9 @@ class CardController extends jfxf.Initializable{
     })
 
      cardV.setOnDragOver(ev => {
-
       ev.acceptTransferModes(TransferMode.ANY)
       ev.consume()
     })
-
-
-
   }
 
 }

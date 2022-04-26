@@ -16,7 +16,6 @@ object KanbanService {
   def addList(name: String, board: Board) = {
     val l = new CardList(name)
     board.addCardList(l)
-    l
   }
   def removeList(list: CardList)(board: Board) = board.removeCardList(list)
   def getLists(board: Board) = board.getCardLists
@@ -25,7 +24,6 @@ object KanbanService {
   def addCard(content: String, cList: CardList) = {
     val c = new Card(content)
     cList.addCard(c)
-    c
   }
   def removeCard(card: Card, cList: CardList) = cList.removeCard(card)
   def getCards(cList: CardList) = cList.getCards
@@ -42,7 +40,7 @@ object KanbanService {
 
   def saveCard(card: Card, path: String) = {
     try {
-      saveXml(card.toXml, path + s"\\{$card}")
+      saveXml(card.toXml, path + s"\\$card")
       true
     } catch {
       case e: IOException => false

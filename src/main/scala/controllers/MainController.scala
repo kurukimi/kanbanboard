@@ -2,23 +2,19 @@ package controllers
 
 import Models.{Board, Card, CardList, KanbanModel}
 import Service.KanbanService
-import javafx.beans.binding.Bindings
 import javafx.beans.value.{ChangeListener, ObservableValue}
 import javafx.scene.control.{Alert, MenuButton, MenuItem, ScrollPane, Tab, TabPane, TextField, TextInputDialog}
 import javafx.scene.{Node, control => jfxsc, layout => jfxsl}
 import javafx.{event => jfxe, fxml => jfxf}
 import scalafx.Includes._
-import scalafx.scene.control.Button
 import javafx.scene.layout.{AnchorPane, GridPane, Pane, Priority}
 import javafx.collections.ListChangeListener
 import javafx.scene.control.Alert.AlertType
-
 import scala.jdk.CollectionConverters._
 import javafx.stage.FileChooser
-
 import java.net.URL
 import java.util
-import scala.collection.IterableOnce.iterableOnceExtensionMethods
+
 
 
 class MainController extends jfxf.Initializable{
@@ -41,12 +37,10 @@ class MainController extends jfxf.Initializable{
       case x: ScrollPane => {
             x.getContent match {
               case i: TableView => {
-
                 KanbanService.addList("Title", i.b)
 
               }
             }
-
       }
       case _ =>
     }
@@ -84,7 +78,6 @@ class MainController extends jfxf.Initializable{
 
   @jfxf.FXML
   private def addTable(event: jfxe.ActionEvent) = {
-
     KanbanService.addBoard(s"table ${KanbanService.getBoards.length+1}")
   }
 
@@ -96,7 +89,6 @@ class MainController extends jfxf.Initializable{
   @jfxf.FXML
   override def initialize(url: URL, rb: util.ResourceBundle): Unit = {
 
-    println("mainc  called")
     def scrl(itm: Board) = {
       val scr = new ScrollPane()
       scr.hgrow = Priority.ALWAYS
@@ -208,8 +200,6 @@ class MainController extends jfxf.Initializable{
           }
       }
     })
-
-
 
     val arc = KanbanService.getArchive.getObs
     arc.addListener(new ListChangeListener[Card]() {
