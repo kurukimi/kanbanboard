@@ -18,62 +18,60 @@ import java.util
 
 
 class MainController extends jfxf.Initializable{
-
   @jfxf.FXML
   var TableVController: TableController = _
+  // initial tab containing table
   @jfxf.FXML
   var tab1: Tab = _
   @jfxf.FXML
   var archive: MenuButton = _
   @jfxf.FXML
-  var tabP: TabPane = _
+  var tabPane: TabPane = _
   @jfxf.FXML
   var filter: TextField = _
 
 
   @jfxf.FXML
   private def handleListAdd(event: jfxe.ActionEvent): Unit = {
-    tabP.getSelectionModel.getSelectedItem.getContent match {
-      case x: ScrollPane => {
-            x.getContent match {
-              case i: TableView => {
-                KanbanService.addList("Title", i.b)
-
+    tabPane.getSelectionModel.getSelectedItem.getContent match {
+      case tabContent: ScrollPane => {
+            tabContent.getContent match {
+              case scrlPaneContent: TableView => {
+                KanbanService.addList("Title", scrlPaneContent.board)
               }
             }
       }
       case _ =>
     }
-
   }
 
   @jfxf.FXML
   def loadCard() = {
-    val brd = tabP.getSelectionModel.getSelectedItem.getContent match {
-      case x: ScrollPane => x.getContent match {
-        case z: TableView => z.b
+    // Get board of selected tab
+    val board = tabPane.getSelectionModel.getSelectedItem.getContent match {
+      case tabContent: ScrollPane => tabContent.getContent match {
+        case scrlPaneContent: TableView => scrlPaneContent.board
       }
-    }
-    if (KanbanService.getLists(brd).nonEmpty) {
-      val fl = new FileChooser()
-      fl.getExtensionFilters.add(new FileChooser.ExtensionFilter("XML Files", "*.xml"))
-      val sel = fl.showOpenDialog(tabP.getScene.getWindow)
 
-      if (sel != null) {
-        val crd = KanbanService.loadCard(sel.getPath)
-        crd match {
-          case Some(c: Card) => KanbanService.getLists(brd).head.addCard(c)
-          case _ => {val al = new Alert(AlertType.ERROR); al.setContentText("File load failed"); al.show()}
+    }
+    // if board has lists: allow card load
+    // else show alert
+    if (KanbanService.getLists(board).nonEmpty) {
+      val fileChooser = new FileChooser()
+      fileChooser.getExtensionFilters.add(new FileChooser.ExtensionFilter("XML Files", "*.xml"))
+      val file = fileChooser.showOpenDialog(tabPane.getScene.getWindow)
+      if (file != null) {
+        val maybeCard = KanbanService.loadCard(file.getPath)
+        maybeCard match {
+          case Some(c: Card) => KanbanService.getLists(board).head.addCard(c)
+          case _ => {val alert = new Alert(AlertType.ERROR); alert.setContentText("File load failed"); alert.show()}
         }
-
       }
-
     } else {
-      val a = new Alert(AlertType.INFORMATION)
-      a.setContentText("Add list to load a card")
-      a.show()
+      val alert = new Alert(AlertType.INFORMATION)
+      alert.setContentText("Add list to load a card")
+      alert.show()
     }
-
   }
 
   @jfxf.FXML
@@ -82,160 +80,138 @@ class MainController extends jfxf.Initializable{
   }
 
   @jfxf.FXML
-  private def handleArchive(event: jfxe.ActionEvent) = {
-    TableVController.ListVController
-  }
-
-  @jfxf.FXML
   override def initialize(url: URL, rb: util.ResourceBundle): Unit = {
 
-    def scrl(itm: Board) = {
-      val scr = new ScrollPane()
-      scr.hgrow = Priority.ALWAYS
-      scr.setFitToWidth(true)
-      scr.setFitToWidth(true)
-      scr.setContent(new TableView(itm))
-      scr
+    def boardToScrollPane(board: Board) = {
+      val scrollPane = new ScrollPane()
+      scrollPane.hgrow = Priority.ALWAYS
+      scrollPane.setFitToWidth(true)
+      scrollPane.setFitToWidth(true)
+      scrollPane.setContent(new TableView(board))
+      scrollPane
     }
-    def menui(itm: Card) = {
-      val mn = new MenuItem()
-      mn.setId(itm.toString)
-      mn.setText(itm.text)
-      mn.setOnAction((e) => {
-        if (KanbanService.getBoards.nonEmpty && KanbanService.getBoards.exists(_.getCardLists.nonEmpty)) {
 
-          val brd = tabP.getSelectionModel.getSelectedItem.getContent match {
-            case x: ScrollPane => x.getContent match {
-              case z: TableView => z.b
+
+    def cardToArchiveMenuItem(card: Card) = {
+      val menuItem = new MenuItem()
+      menuItem.setId(card.toString)
+      menuItem.setText(card.text)
+      // action when clicked
+      menuItem.setOnAction((e) => {
+        // if exists board with list(s): remove this item from archive
+        if (KanbanService.getBoards.exists(_.getCardLists.nonEmpty)) {
+          val board = tabPane.getSelectionModel.getSelectedItem.getContent match {
+            case tabContent: ScrollPane => tabContent.getContent match {
+              case scrlPaneContent: TableView => scrlPaneContent.board
             }
           }
-          KanbanService.removeFromArchive(itm, KanbanService.getLists(brd).head)
+          KanbanService.removeFromArchive(card, KanbanService.getLists(board).head)
         }
       })
-      mn
+      menuItem
     }
 
-    tabP.getTabs.addListener(new ListChangeListener[Tab]() {
+    tabPane.getTabs.addListener(new ListChangeListener[Tab]() {
       override def onChanged(change: ListChangeListener.Change[_ <: Tab]): Unit = {
-        tabP.getTabs.foreach(_.setClosable(true))
-        tabP.getTabs.get(0).setClosable(false)
+        // make it so first tab can't be closed
+        tabPane.getTabs.foreach(_.setClosable(true))
+        tabPane.getTabs.get(0).setClosable(false)
       }
     })
 
     filter.textProperty.addListener(new ChangeListener[String]() {
-      override def changed(observableValue: ObservableValue[_ <: String], t: String, t1: String): Unit = {
-        if (t1.nonEmpty){
-          val lkp = tabP.getSelectionModel.getSelectedItem.getContent.lookupAll("#cardV")
-          if (lkp != null) {
-            val filtr = KanbanService.filter(t1)
-              val cl: Set[Node] = lkp.asScala.toSet
-              cl.foreach {
-                case x: CardView => if (!filtr.contains(x.card)) x.setVisible(false) else x.setVisible(true)
+      override def changed(observableValue: ObservableValue[_ <: String], oldStr: String, newStr: String): Unit = {
+        val maybeCardviews = tabPane.getSelectionModel.getSelectedItem.getContent.lookupAll("#cardV")
+        if (maybeCardviews != null) {
+          val maybeCardViewsSet: Set[Node] = maybeCardviews.asScala.toSet
+          if (newStr.nonEmpty) {
+            val filteredCards = KanbanService.filter(newStr)
+            // hide cards not returned by the filter
+            maybeCardViewsSet.foreach {
+                case cView: CardView => if (!filteredCards.contains(cView.card)) cView.setVisible(false) else cView.setVisible(true)
               }
+          } else {
+            maybeCardViewsSet.foreach {
+              case x: CardView => x.setVisible(true)
+            }
           }
-        } else {
-          val lkp = tabP.getSelectionModel.getSelectedItem.getContent.lookupAll("#cardV")
-          if (lkp != null) {
-              val cl: Set[Node] = lkp.asScala.toSet
-              cl.foreach {
-                case x: CardView => x.setVisible(true)
-              }
-          }
-
-        }
-      }})
+          }}})
 
 
     KanbanService.addBoard("table 1")
-    tab1.setContent(scrl(KanbanService.getBoards(0)))
+    tab1.setContent(boardToScrollPane(KanbanService.getBoards.head))
     tab1.setClosable(false)
-    tab1.setOnCloseRequest((e) => {tab1.getContent match {
-      case t: ScrollPane => t.getContent match {
-        case x: TableView => KanbanService.removeBoard(x.b)
+    tab1.setOnCloseRequest((e) => {
+      tab1.getContent match {
+      case tabContent: ScrollPane => tabContent.getContent match {
+        case scrlPaneContent: TableView => KanbanService.removeBoard(scrlPaneContent.board)
         case _ =>
       }
       case _ =>
     }
-
     })
 
-    val obs = KanbanService.getBoardObs.delegate
-    obs.addListener(new ListChangeListener[Board]() {
+
+    KanbanService.getBoardObs.delegate.addListener(new ListChangeListener[Board]() {
       override def onChanged(c: ListChangeListener.Change[_ <: Board]): Unit = {
         while ( {
           c.next
         }) if (c.wasPermutated) for (i <- c.getFrom until c.getTo) {
-
           }
         else if (c.wasUpdated) {
-
           }
           else {
 
             for (remitem <- 0 until c.getRemoved.size) {
-              val it = c.getRemoved.get(remitem)
-              val rem = tabP.getTabs.find(t => t.getContent match {
-                case c: ScrollPane => c.getContent match {
-                  case z: TableView => z.b == it
+              val board = c.getRemoved.get(remitem)
+              val maybeTab = tabPane.getTabs.find(t => t.getContent match {
+                case scrl: ScrollPane => scrl.getContent match {
+                  case tableView: TableView => tableView.board == board
                 }
               })
-              tabP.getTabs.remove(rem)
-
-
+              tabPane.getTabs.remove(maybeTab)
             }
             for (additem <- 0 until c.getAddedSubList.size) {
-              val itm = c.getAddedSubList.get(additem)
-              val t = new Tab()
-              t.setOnClosed((e) => {KanbanService.removeBoard(t.getContent match {
-                case i: ScrollPane => i.getContent match {
-                  case v: TableView => v.b
-                }
-              })})
-              t.setText(itm.name)
-              t.setContent(scrl(itm))
-              tabP.getTabs.add(t)
+              val board = c.getAddedSubList.get(additem)
+              val tab = new Tab()
+              tab.setOnClosed((e) => {
+                KanbanService.removeBoard(tab.getContent match {
+                  case scrlView: ScrollPane => scrlView.getContent match {
+                    case tableView: TableView => tableView.board
+                  }
+                })})
 
-
+              tab.setText(board.name)
+              tab.setContent(boardToScrollPane(board))
+              tabPane.getTabs.add(tab)
             }
           }
       }
     })
 
-    val arc = KanbanService.getArchive.getObs
-    arc.addListener(new ListChangeListener[Card]() {
+
+    KanbanService.getArchive.getObs.addListener(new ListChangeListener[Card]() {
       override def onChanged(c: ListChangeListener.Change[_ <: Card]): Unit = {
         while ( {
           c.next
         }) if (c.wasPermutated) for (i <- c.getFrom until c.getTo) {
-
           }
         else if (c.wasUpdated) {
-
           }
           else {
             for (remitem <- 0 until c.getRemoved.size) {
-              val itm = c.getRemoved.get(remitem)
-              val del = archive.getItems.find(x => (x.getId == itm.toString)).getOrElse(None)
-              archive.getItems.remove(del)
-
+              val card = c.getRemoved.get(remitem)
+              val archivedCard = archive.getItems.find(x => (x.getId == card.toString)).getOrElse(None)
+              archive.getItems.remove(archivedCard)
             }
             for (additem <- 0 until c.getAddedSubList.size) {
-              val itm = c.getAddedSubList.get(additem)
-
-              archive.getItems.add(menui(itm))
-
-
+              val card = c.getAddedSubList.get(additem)
+              archive.getItems.add(cardToArchiveMenuItem(card))
             }
           }
       }
       })
     }
-
-
-
-
-
-
 
 }
 

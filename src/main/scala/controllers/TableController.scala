@@ -1,37 +1,37 @@
 package controllers
 import Models.CardList
 import Service.KanbanService
-import javafx.scene.layout.{ColumnConstraints, GridPane}
-import javafx.scene.text.Text
-import javafx.scene.{Node, control => jfxsc, layout => jfxsl}
-import javafx.{event => jfxe, fxml => jfxf}
-import javafx.collections.{FXCollections, ListChangeListener}
+import javafx.collections.ListChangeListener
 import javafx.fxml.FXMLLoader
+import javafx.scene.layout.GridPane
+import javafx.scene.{layout => jfxsl}
+import javafx.{fxml => jfxf}
+
 import java.io.IOException
-import scala.collection.mutable.Map
 import java.net.URL
 import java.util
-
+import scala.collection.mutable.Map
 
 
 
 class TableController extends jfxf.Initializable{
+  val colCount = 10
   val coordinateLookUp = Map[(Int, Int) , ListView]()
   val tb = this
+
 
   @jfxf.FXML
   var tablePane: TableView = _
   @jfxf.FXML
   var ListVController: ListController = _
 
-
   def delList(l: ListView): Unit = {
-    KanbanService.removeList(l.listModel)(tablePane.b)
+    KanbanService.removeList(l.listModel)(tablePane.board)
   }
 
   @jfxf.FXML
   override def initialize(url: URL, rb: util.ResourceBundle): Unit = {
-    val lists = KanbanService.getListObs(tablePane.b)
+    val lists = KanbanService.getListObs(tablePane.board)
     lists.addListener(new ListChangeListener[Models.CardList] () {
       override def onChanged(c: ListChangeListener.Change[_ <: CardList]): Unit = {
         while ( {
@@ -49,38 +49,41 @@ class TableController extends jfxf.Initializable{
           }
           else {
             for (remitem <- 0 until c.getRemoved.size) {
-              val lst = KanbanService.getLists(tablePane.b)
-              val it = c.getRemoved.get(remitem)
-              var ind = coordinateLookUp.find(_._2.listModel == it).map(_._1).getOrElse(0,0)
-              val rm = coordinateLookUp(ind)
-              tablePane.getChildren.remove(rm)
-              def i = ((ind._2 *10 ) + ind._1 + 1) % 10
-              def i1 =  ((ind._2 *10 ) + ind._1 + 1) / 10
-              var nxt = (i, i1)
-              while (ind != ((lst.length)%10, (lst.length)/10)) {
-                val toMove = coordinateLookUp(nxt)
-                GridPane.setConstraints(toMove , ind._1, ind._2)
-                coordinateLookUp.put(ind, toMove)
-                ind = nxt
-                nxt = (i, i1)
+              val lists = KanbanService.getLists(tablePane.board)
+              val cardList = c.getRemoved.get(remitem)
+              // get coordinates of removed cardList, so we can start collapsing from there
+              var coords = coordinateLookUp.find(_._2.listModel == cardList).map(_._1).getOrElse(0,0)
+              val listView = coordinateLookUp(coords)
+              tablePane.getChildren.remove(listView)
+              // simple arithmetics calculating next coordinates
+              def newCoordX = ((coords._2 * colCount ) + coords._1 + 1) % colCount
+              def newCoordY =  ((coords._2 * colCount ) + coords._1 + 1) / colCount
+              var newCoords = (newCoordX, newCoordY)
+              // move the lists that were after the removed list one coordinate back
+              while (coords != ((lists.length) % colCount, (lists.length) / colCount )) {
+                val toMove = coordinateLookUp(newCoords)
+                GridPane.setConstraints(toMove , coords._1, coords._2)
+                coordinateLookUp.put(coords, toMove)
+                coords = newCoords
+                newCoords = (newCoordX, newCoordY)
               }
-              coordinateLookUp.remove(((lst.length)%10, (lst.length)/10))
+              // need to remove last coordinate list
+              coordinateLookUp.remove(((lists.length) % colCount, (lists.length) / colCount))
             }
             for (additem <- 0 until c.getAddedSubList.size) {
-              val itm = c.getAddedSubList.get(additem)
-              val ind = tablePane.b.getCardLists.indexOf(itm)
+              val cardList = c.getAddedSubList.get(additem)
+              val ind = tablePane.board.getCardLists.indexOf(cardList)
               val coords = coordinateLookUp.keys.toSeq.lastOption.getOrElse((-1,-1))
-              val i = (ind) % 10
-              val i1 = (ind) / 10
-              val l = new ListView(itm, tb)
-              GridPane.setConstraints(l, i, i1)
-              tablePane.getChildren.add(l)
-              coordinateLookUp.put((i, i1), l)
-
+              val newX = (ind) % colCount
+              val newY = (ind) / colCount
+              val listView = new ListView(cardList, tb)
+              GridPane.setConstraints(listView, newX, newY)
+              tablePane.getChildren.add(listView)
+              coordinateLookUp.put((newX, newY), listView)
             }
           }
       }
-              }
+      }
     })
     tablePane.getChildren.clear()
 
@@ -89,25 +92,27 @@ class TableController extends jfxf.Initializable{
 
 
   def update() = {
-    val lists = coordinateLookUp
-    val lst = KanbanService.getLists(tablePane.b)
-    for (i <- lst.indices) {
-      val e = lists(i%10 , i/10)
-      val c = lst(i)
-      if (e.listModel != c) {
-        val n = coordinateLookUp.find(_._2.listModel == c) match {case Some(i: ((Int, Int), ListView)) => i}
-        GridPane.setConstraints(n._2, i%10, i/10)
-        GridPane.setConstraints(e, n._1._1, n._1._2)
-        coordinateLookUp.put((i%10, i/10),n._2)
-        coordinateLookUp.put(n._1, e)
+    val cardLists = KanbanService.getLists(tablePane.board)
+    for (index <- cardLists.indices) {
+      val (i1, i2) = (index % colCount, index / colCount)
+      val listView = coordinateLookUp(i1 , i2)
+      val cardList = cardLists(index)
+      if (listView.listModel != cardList) {
+        val (coords, lView) = coordinateLookUp.find(_._2.listModel == cardList) match {case Some(i: ((Int, Int), ListView)) => i}
+        GridPane.setConstraints(lView, i1, i2)
+        GridPane.setConstraints(listView, coords._1, coords._2)
+        coordinateLookUp.put((i1, i2),lView)
+        coordinateLookUp.put(coords, listView)
       }
     }
   }
 }
 
 
-class TableView(board: Models.Board) extends jfxsl.GridPane{
-    val b = board
+
+
+class TableView(val board: Models.Board) extends jfxsl.GridPane{
+
     try {
       var loader = new FXMLLoader(getClass.getResource("/views/TableView.fxml"))
       loader.setRoot(this)

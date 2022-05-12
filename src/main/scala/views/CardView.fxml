@@ -21,11 +21,7 @@
              <MenuItem onAction="#saveCard" text="Save" />
             <SeparatorMenuItem mnemonicParsing="false" />
             <MenuItem mnemonicParsing="false" text="Add Tag" onAction="#addTag"/>
-             <Menu fx:id="tags" text="Tags">
-                 <items>
-
-                 </items>
-             </Menu>
+             <Menu fx:id="tags" text="Tags"></Menu>
          </items>
      </MenuButton>
     </HBox>

@@ -1,20 +1,19 @@
 package controllers
 
-
 import Service.KanbanService
+import javafx.beans.value.{ChangeListener, ObservableValue}
+import javafx.collections.SetChangeListener
+import javafx.event.ActionEvent
 import javafx.fxml.FXMLLoader
-import javafx.scene.{control => jfxsc, layout => jfxsl}
-import javafx.{event => jfxe, fxml => jfxf}
-import scalafx.Includes._
-import javafx.scene.text.Text
-import javafx.scene.control.{Alert, MenuItem, TextArea, TextInputDialog}
-import javafx.beans.value.ChangeListener
-import javafx.beans.value.ObservableValue
-import javafx.collections.{ListChangeListener, SetChangeListener}
-import javafx.event.{ActionEvent, Event}
 import javafx.scene.control.Alert.AlertType
+import javafx.scene.control.{Alert, MenuItem, TextArea, TextInputDialog}
 import javafx.scene.input.{ClipboardContent, TransferMode}
+import javafx.scene.text.Text
+import javafx.scene.{control => jfxsc, layout => jfxsl}
 import javafx.stage.DirectoryChooser
+import javafx.{fxml => jfxf}
+import scalafx.Includes._
+
 import java.io.IOException
 import java.net.URL
 import java.util
@@ -35,10 +34,10 @@ class CardController extends jfxf.Initializable{
   def saveCard() = {
     menuB.hide()
     var directoryChooser = new DirectoryChooser()
-    var d = directoryChooser.showDialog(cardV.getScene.getWindow)
-    if (d != null) {
-       val success = KanbanService.saveCard(cardV.card, d.getPath)
-        if (!success) {val al = new Alert(AlertType.ERROR); al.setContentText("File save failed"); al.show()}
+    var file = directoryChooser.showDialog(cardV.getScene.getWindow)
+    if (file != null) {
+       val success = KanbanService.saveCard(cardV.card, file.getPath)
+        if (!success) {val alert = new Alert(AlertType.ERROR); alert.setContentText("File save failed"); alert.show()}
     }
   }
 
@@ -56,10 +55,10 @@ class CardController extends jfxf.Initializable{
 
   @jfxf.FXML
   def addTag(event: ActionEvent) = {
-    val inp = new TextInputDialog()
-    inp.setContentText("tag name")
-    var di = inp.showAndWait()
-    di.ifPresent(tag => {
+    val inputDialog = new TextInputDialog()
+    inputDialog.setContentText("tag name")
+    var value = inputDialog.showAndWait()
+    value.ifPresent(tag => {
       cardV.card.addTags(tag)
     })
   }
@@ -68,32 +67,32 @@ class CardController extends jfxf.Initializable{
   override def initialize(url: URL, rb: util.ResourceBundle): Unit = {
     timeT.setText(s"${cardV.card.getTimeElapsed} hours ago")
     textT.setText(cardV.card.getText)
-    cardV.card.getTags.foreach(z => {val mn = new MenuItem();mn.setText("@"+z) ;tags.getItems.add(mn)})
+    cardV.card.getTags.foreach(str => {val menuItem = new MenuItem();menuItem.setText("@"+str) ;tags.getItems.add(menuItem)})
     textT.textProperty.addListener(new ChangeListener[String]() {
-      override def changed(observableValue: ObservableValue[_ <: String], t: String, t1: String): Unit = {
-        cardV.card.setText(t1)
+      override def changed(observableValue: ObservableValue[_ <: String], oldStr: String, newStr: String): Unit = {
+        cardV.card.setText(newStr)
       }})
 
     cardV.card.getObsTags.addListener(new SetChangeListener[String]() {
       override def onChanged(change: SetChangeListener.Change[_ <: String]): Unit = {
         tags.getItems.clear()
-        cardV.card.getTags.foreach(z => {
-          val m = new MenuItem()
-          m.setText("@" + z)
-          m.setOnAction(e => {cardV.card.removeTags(z)})
-          tags.getItems.add(m)
+        cardV.card.getTags.foreach(str => {
+          val menuItem = new MenuItem()
+          menuItem.setText("@" + str)
+          menuItem.setOnAction(e => {cardV.card.removeTags(str)})
+          tags.getItems.add(menuItem)
 
         })
       }
     })
 
     cardV.setOnDragDetected( event => {
-      val im = cardV.snapshot(null, null)
-      var db = cardV.startDragAndDrop(TransferMode.MOVE)
+      val image = cardV.snapshot(null, null)
+      var dragboard = cardV.startDragAndDrop(TransferMode.MOVE)
       var content = new ClipboardContent()
       content.putString("")
-      db.setContent(content)
-      db.setDragView(im)
+      dragboard.setContent(content)
+      dragboard.setDragView(image)
       event.consume()
 
     })
@@ -103,8 +102,8 @@ class CardController extends jfxf.Initializable{
       ev.consume()
     })
   }
-
 }
+
 
 class CardView(val card: Models.Card, val listIn: ListController) extends jfxsl.VBox {
 

@@ -22,8 +22,7 @@ object FileManager{
   @throws(classOf[IOException])
   def loadXml(path: String)  = {
       val e = scala.xml.XML.loadFile(path)
-      println((e \\ "text"))
-      if ((e \\ "text").text.isEmpty | (e \\ "time").text.isEmpty) throw new IOException
+      if ((e \\ "text").isEmpty | (e \\ "time").text.isEmpty) throw new IOException
       e
     }
   @throws(classOf[IOException])

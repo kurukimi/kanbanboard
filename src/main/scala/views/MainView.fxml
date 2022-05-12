@@ -14,57 +14,45 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Text?>
 
-<VBox prefHeight="400.0" prefWidth="640.0" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controllers.MainController">
-  <children>
+<VBox prefHeight="400.0" prefWidth="640.0" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="controllers.MainController">
     <MenuBar VBox.vgrow="NEVER">
-      <menus>
         <Menu mnemonicParsing="false" text="File">
-          <items>
+            <MenuItem mnemonicParsing="false" onAction="#loadCard" text="Open"/>
 
-            <MenuItem mnemonicParsing="false" onAction="#loadCard" text="Open" />
-
-          </items>
         </Menu>
         <Menu mnemonicParsing="false" text="Help">
-          <items>
-            <MenuItem mnemonicParsing="false" text="Good to know" />
-          </items>
+            <MenuItem mnemonicParsing="false" text="Good to know"/>
         </Menu>
-      </menus>
     </MenuBar>
-    <AnchorPane maxHeight="-1.0" maxWidth="-1.0" prefHeight="-1.0" prefWidth="-1.0" VBox.vgrow="ALWAYS">
-         <children>
-            <HBox layoutX="187.0" layoutY="87.0" prefHeight="100.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-               <children>
-                  <VBox alignment="BOTTOM_CENTER" minWidth="117.0" prefHeight="375.0" prefWidth="117.0" style="-fx-spacing: 5;">
-                     <children>
-                        <MenuButton fx:id="archive" maxWidth="200" mnemonicParsing="false" prefHeight="29.0" prefWidth="117.0" text="Archived">
-                          <items>
+    <AnchorPane VBox.vgrow="ALWAYS">
+        <HBox layoutX="187.0" layoutY="87.0" prefHeight="100.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0"
+              AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+            <VBox alignment="BOTTOM_CENTER" minWidth="117.0" prefHeight="375.0" prefWidth="117.0"
+                  style="-fx-spacing: 5;">
+                <MenuButton fx:id="archive" maxWidth="200" mnemonicParsing="false" prefHeight="29.0"
+                            prefWidth="117.0" text="Archived">
 
-                          </items>
-                        </MenuButton>
-                         <Button mnemonicParsing="false" onAction="#addTable" prefHeight="37.0" prefWidth="121.0" text="new Table" />
-                        <Button fx:id="addList" onAction="#handleListAdd" prefHeight="37.0" prefWidth="121.0" text="new List" />
-                        <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0">
-                           <children>
-                              <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Filter" />
-                              <TextField fx:id="filter" />
-                           </children>
-                        </VBox>
-                     </children></VBox>
+                </MenuButton>
+                <Button mnemonicParsing="false" onAction="#addTable" prefHeight="37.0" prefWidth="121.0"
+                        text="new Table"/>
+                <Button fx:id="addList" onAction="#handleListAdd" prefHeight="37.0" prefWidth="121.0"
+                        text="new List"/>
+                <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0">
+                    <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Filter"/>
+                    <TextField fx:id="filter"/>
+                </VBox>
+            </VBox>
 
-                    <ScrollPane fitToHeight="true" fitToWidth="true" HBox.hgrow="ALWAYS">
-                   <TabPane fx:id="tabP">
-                       <tabs />
-                       <Tab fx:id="tab1" text="table1">
+            <ScrollPane fitToHeight="true" fitToWidth="true" HBox.hgrow="ALWAYS">
+                <TabPane fx:id="tabPane">
 
-                       </Tab>
-                       <tabs />
-                   </TabPane>
-                   </ScrollPane>
-               </children>
-            </HBox>
-         </children>
+                    <Tab fx:id="tab1" text="table1">
+
+                    </Tab>
+
+                </TabPane>
+            </ScrollPane>
+        </HBox>
     </AnchorPane>
-  </children>
 </VBox>

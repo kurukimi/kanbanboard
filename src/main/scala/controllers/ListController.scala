@@ -25,7 +25,7 @@ class ListController extends jfxf.Initializable{
   @jfxf.FXML
   var ListB: VBox = _
 
-  var initial = true
+
 
 
   @jfxf.FXML
@@ -44,83 +44,76 @@ class ListController extends jfxf.Initializable{
       ListA.getChildren.remove(ListA.getChildren.indexOf(ListA.getChildren.last))
     }
     for (i <- cards.indices) {
-      val e = cards(i)
-      val c = ListA.getChildren.toBuffer.lift(i)
-      c match {
-        case Some(x: CardView) => {
-          if (x.card != e.card) {
-          ListA.getChildren.set(i, e)
+      val cardView = cards(i)
+      val maybeCardView = ListA.getChildren.toBuffer.lift(i)
+      maybeCardView match {
+        case Some(cView: CardView) => {
+          if (cView.card != cardView.card) {
+          ListA.getChildren.set(i, cardView)
         } }
         case _ => {
-          if (i > ListA.getChildren.length-1) ListA.getChildren.add(i, e)
-          else ListA.getChildren.set(i, e)
+          if (i > ListA.getChildren.length-1) ListA.getChildren.add(i, cardView)
+          else ListA.getChildren.set(i, cardView)
         }
       }
-
     }
-
   }
 
   @jfxf.FXML
   override def initialize(url: URL, rb: util.ResourceBundle): Unit = {
-
     title.setText(ListV.listModel.name)
     GridPane.setHgrow(ListV, Priority.ALWAYS)
 
     ListV.listModel.getObs.delegate.addListener(new ListChangeListener[Models.Card]() {
-      override def onChanged(change: ListChangeListener.Change[_ <: Card]): Unit = {update()}
+      override def onChanged(change: ListChangeListener.Change[_ <: Card]): Unit = update()
     })
 
     ListV.setOnDragDetected( event => {
-        val im = ListV.snapshot(null, null)
-        var db = ListV.startDragAndDrop(TransferMode.MOVE)
+        val image = ListV.snapshot(null, null)
+        var dragboard = ListV.startDragAndDrop(TransferMode.MOVE)
         var content = new ClipboardContent()
         content.putString("")
-        db.setContent(content)
-        db.setDragView(im)
+        dragboard.setContent(content)
+        dragboard.setDragView(image)
         event.consume()
     })
 
-    ListV.setOnDragEntered(e =>{
-      val s = e.getGestureSource match {
-        case x: ListView => {
-          if (ListV != x){
+    ListV.setOnDragEntered(event => {
+      val source = event.getGestureSource match {
+        case listView: ListView => {
+          if (ListV != listView){
               ListV.setRotate(3)
         }}
-        case z: CardView => {
-            if (!ListV.listModel.getCards.contains(z.card)) {
+        case cardV: CardView => {
+            if (!ListV.listModel.getCards.contains(cardV.card)) {
               ListV.setRotate(-3)
             }
           }
-      }
-    } )
+      }})
 
     ListV.setOnDragExited(e =>{
       if (ListV != e.getGestureSource){
-
         ListV.setRotate(0)
     }}
     )
 
     ListV.setOnDragDropped(e => {
       val target =  e.getGestureTarget match {
-        case x: ListView => x
+        case listView: ListView => listView
       }
 
      val source = e.getGestureSource match {
-        case x: ListView => {
-                val lsts = KanbanService.getListObs(ListV.table.tablePane.b)
-                val targIndx = lsts.indexOf(target.listModel)
-                val srcIndx = lsts.indexOf(x.listModel)
-                lsts.update(targIndx, x.listModel)
-                lsts.update(srcIndx, target.listModel)
+        case listView: ListView => {
+                val lists = KanbanService.getListObs(ListV.table.tablePane.board)
+                val targIndx = lists.indexOf(target.listModel)
+                val srcIndx = lists.indexOf(listView.listModel)
+                lists.update(targIndx, listView.listModel)
+                lists.update(srcIndx, target.listModel)
         }
-        case z: CardView => {
-          target.listModel.addCard(z.card)
-          z.listIn.ListV.listModel.removeCard(z.card)
-
+        case cardView: CardView => {
+          target.listModel.addCard(cardView.card)
+          cardView.listIn.ListV.listModel.removeCard(cardView.card)
         }
-
       }
       target.setRotate(0)
       e.setDropCompleted(true)
@@ -132,7 +125,6 @@ class ListController extends jfxf.Initializable{
       ev.consume()
     })
 
-
     title.textProperty.addListener(new ChangeListener[String]() {
       override def changed(observableValue: ObservableValue[_ <: String], t: String, t1: String): Unit = {
         ListV.listModel.setName(t1)
@@ -142,11 +134,11 @@ class ListController extends jfxf.Initializable{
   }
 }
 
-class ListView(val listModel: Models.CardList, val table: TableController) extends jfxsl.VBox{
 
+
+class ListView(val listModel: Models.CardList, val table: TableController) extends jfxsl.VBox{
     try {
       var loader = new FXMLLoader(getClass.getResource("/views/ListView.fxml"))
-
       loader.setRoot(this)
       loader.load()
     } catch {
